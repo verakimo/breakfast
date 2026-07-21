@@ -10,6 +10,13 @@
   <p>
     <b>Tervetuloa</b> <i>Hyvä aamiainen -sovellukseen</i>!
   </p>
+  <h2>Classification groups</h2>
+
+  <ul>
+    {% for group in groups %}
+    <li>{{ group.name }}</li>
+    {% endfor %}
+  </ul>
 </body>
 
 </html>

@@ -1,15 +1,15 @@
 from flask import Flask
+from flask import render_template
+import db
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Tervetuloa Hyvä aamiainen -sovellukseen!"
+    groups = db.query(
+        "SELECT id, name "
+        "FROM classification_groups "
+        "ORDER BY id"
+    )
+    return render_template("index.html", groups=groups)
 
-@app.route("/page1")
-def page1():
-    return "Ensimmäinen sivu"
-
-@app.route("/page2")
-def page2():
-    return "Toinen sivu"

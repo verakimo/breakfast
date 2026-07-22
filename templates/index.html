@@ -1,22 +1,61 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-  <title>Etusivu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home | Hyvä aamiainen</title>
 </head>
-
 <body>
-  <h1>Etusivu</h1>
-  <p>
-    <b>Tervetuloa</b> <i>Hyvä aamiainen -sovellukseen</i>!
-  </p>
-  <h2>Classification groups</h2>
+  <header>
+    <h1>Hyvä aamiainen</h1>
+    <p>Breakfast recipes worth waking up for</p>
+  </header>
 
-  <ul>
-    {% for group in groups %}
-    <li>{{ group.name }}</li>
-    {% endfor %}
-  </ul>
+  <main>
+    {% if session.username %}
+      <section>
+        <h2>Welcome, {{ session.username }}!</h2>
+        <p>You are logged in.</p>
+        <p><a href="/logout">Log out</a></p>
+      </section>
+    {% else %}
+      <section>
+        <h2>Log in</h2>
+
+        <form action="/login" method="post">
+          <p>
+            <label for="username">Username</label><br>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              maxlength="30"
+              autocomplete="username"
+              required
+            >
+          </p>
+
+          <p>
+            <label for="password">Password</label><br>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              maxlength="100"
+              autocomplete="current-password"
+              required
+            >
+          </p>
+
+          <button type="submit">Log in</button>
+        </form>
+
+        <p>
+          Do not have an account?
+          <a href="/register">Create an account</a>
+        </p>
+      </section>
+    {% endif %}
+  </main>
 </body>
-
 </html>

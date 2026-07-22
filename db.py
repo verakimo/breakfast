@@ -12,18 +12,27 @@ def get_connection():
 
 def execute(sql, params=()):
     connection = get_connection()
-    result = connection.execute(sql, params)
-    connection.commit()
-    g.last_insert_id = result.lastrowid
-    connection.close()
 
-
-def last_insert_id():
-    return g.last_insert_id
+    try:
+        result = connection.execute(sql, params)
+        connection.commit()
+        g.last_insert_id = result.lastrowid
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
 
 
 def query(sql, params=()):
     connection = get_connection()
-    result = connection.execute(sql, params).fetchall()
-    connection.close()
-    return result
+
+    try:
+        result = connection.execute(sql, params).fetchall()
+        return result
+    finally:
+        connection.close()
+
+
+def last_insert_id():
+    return g.last_insert_id

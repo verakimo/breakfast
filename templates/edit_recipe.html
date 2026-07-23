@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit recipe | Hyvä aamiainen</title>
+</head>
+<body>
+  <header>
+    <h1>Hyvä aamiainen</h1>
+    <p>Breakfast recipes worth waking up for!</p>
+  </header>
+
+  <main>
+    <h2>Edit recipe</h2>
+
+    <form action="/update_recipe" method="post">
+      <input
+        type="hidden"
+        name="recipe_id"
+        value="{{ recipe.id }}"
+      >
+
+      <p>
+        <label for="title">Recipe title</label><br>
+        <input
+          id="title"
+          name="title"
+          type="text"
+          value="{{ recipe.title }}"
+          maxlength="100"
+          required
+        >
+      </p>
+
+      <p>
+        <label for="ingredients">Ingredients</label><br>
+        <textarea
+          id="ingredients"
+          name="ingredients"
+          rows="8"
+          cols="50"
+          maxlength="5000"
+          required
+        >{{ recipe.ingredients }}</textarea>
+      </p>
+
+      <p>
+        <label for="instructions">Preparation instructions</label><br>
+        <textarea
+          id="instructions"
+          name="instructions"
+          rows="10"
+          cols="50"
+          maxlength="5000"
+          required
+        >{{ recipe.instructions }}</textarea>
+      </p>
+
+      <p>
+        <label for="preparation_time">Preparation time in minutes</label><br>
+        <input
+          id="preparation_time"
+          name="preparation_time"
+          type="number"
+          value="{{ recipe.preparation_time }}"
+          min="1"
+          required
+        >
+      </p>
+
+      <button type="submit">Save changes</button>
+    </form>
+
+    <p>
+      <a href="/recipe/{{ recipe.id }}">Cancel</a>
+    </p>
+  </main>
+</body>
+</html>

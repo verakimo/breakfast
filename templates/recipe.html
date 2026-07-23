@@ -22,6 +22,12 @@
     <article>
       <h2>{{ recipe.title }}</h2>
 
+      {% if session.user_id == recipe.user_id %}
+        <p>
+          <a href="/edit_recipe/{{ recipe.id }}">Edit recipe</a>
+        </p>
+      {% endif %}
+
       <p>
         Added by {{ recipe.username }}<br>
         Preparation time: {{ recipe.preparation_time }} minutes<br>

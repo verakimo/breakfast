@@ -151,3 +151,67 @@ def show_recipe(recipe_id):
         return "Recipe not found.", 404
 
     return render_template("recipe.html", recipe=recipe)
+
+
+@app.route("/edit_recipe/<int:recipe_id>")
+def edit_recipe(recipe_id):
+    """Show the form for editing a recipe."""
+    if "user_id" not in session:
+        return redirect("/")
+
+    recipe = recipes.get_recipe(recipe_id)
+
+    if recipe is None:
+        return "Recipe not found.", 404
+
+    if recipe["user_id"] != session["user_id"]:
+        return "You are not allowed to edit this recipe.", 403
+
+    return render_template("edit_recipe.html", recipe=recipe)
+
+
+@app.route("/update_recipe", methods=["POST"])
+def update_recipe():
+    """Validate and update an existing recipe."""
+    if "user_id" not in session:
+        return "You must be logged in to edit a recipe.", 401
+
+    try:
+        recipe_id = int(request.form["recipe_id"])
+        preparation_time = int(request.form["preparation_time"])
+    except ValueError:
+        return "Invalid recipe id or preparation time.", 400
+
+    recipe = recipes.get_recipe(recipe_id)
+
+    if recipe is None:
+        return "Recipe not found.", 404
+
+    if recipe["user_id"] != session["user_id"]:
+        return "You are not allowed to edit this recipe.", 403
+
+    title = request.form["title"].strip()
+    ingredients = request.form["ingredients"].strip()
+    instructions = request.form["instructions"].strip()
+
+    if not title or len(title) > 100:
+        return "The title must contain 1–100 characters.", 400
+
+    if not ingredients or len(ingredients) > 5000:
+        return "Ingredients must contain 1–5000 characters.", 400
+
+    if not instructions or len(instructions) > 5000:
+        return "Instructions must contain 1–5000 characters.", 400
+
+    if preparation_time <= 0:
+        return "Preparation time must be greater than zero.", 400
+
+    recipes.update_recipe(
+        recipe_id,
+        title,
+        ingredients,
+        instructions,
+        preparation_time,
+    )
+
+    return redirect("/recipe/" + str(recipe_id))

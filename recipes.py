@@ -54,3 +54,31 @@ def get_recipe(recipe_id):
         return None
 
     return rows[0]
+
+
+def update_recipe(
+    recipe_id,
+    title,
+    ingredients,
+    instructions,
+    preparation_time,
+):
+    """Update an existing recipe."""
+    sql = """
+        UPDATE recipes
+        SET title = ?,
+            ingredients = ?,
+            instructions = ?,
+            preparation_time = ?
+        WHERE id = ?
+    """
+    db.execute(
+        sql,
+        [
+            title,
+            ingredients,
+            instructions,
+            preparation_time,
+            recipe_id,
+        ],
+    )

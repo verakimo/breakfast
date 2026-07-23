@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ recipe.title }} | Hyvä aamiainen</title>
+
+  <style>
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hyvä aamiainen</h1>
+    <p>Breakfast recipes worth waking up for!</p>
+  </header>
+
+  <main>
+    <article>
+      <h2>{{ recipe.title }}</h2>
+
+      <p>
+        Added by {{ recipe.username }}<br>
+        Preparation time: {{ recipe.preparation_time }} minutes<br>
+        Added: {{ recipe.created_at }}
+      </p>
+
+      <h3>Ingredients</h3>
+      <pre>{{ recipe.ingredients }}</pre>
+
+      <h3>Preparation instructions</h3>
+      <pre>{{ recipe.instructions }}</pre>
+    </article>
+
+    <p><a href="/">Return to the home page</a></p>
+  </main>
+</body>
+</html>

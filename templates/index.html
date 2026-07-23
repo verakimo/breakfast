@@ -12,6 +12,18 @@
   </header>
 
   <main>
+    <section>
+      <h2>Recipes</h2>
+
+      {% for recipe in recipes %}
+        <p>
+          <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
+        </p>
+      {% else %}
+        <p>No recipes have been added yet.</p>
+      {% endfor %}
+    </section>
+
     {% if session.username %}
       <section>
         <h2>Welcome, {{ session.username }}!</h2>

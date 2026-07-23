@@ -17,8 +17,9 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    """Show the home page and the login form."""
-    return render_template("index.html")
+    """Show the home page and the list of recipes."""
+    all_recipes = recipes.get_recipes()
+    return render_template("index.html", recipes=all_recipes)
 
 
 @app.route("/register")

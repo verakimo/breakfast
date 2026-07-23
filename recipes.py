@@ -22,6 +22,16 @@ def add_recipe(title, ingredients, instructions, preparation_time, user_id):
     return db.last_insert_id()
 
 
+def get_recipes():
+    """Return all recipes, newest first."""
+    sql = """
+        SELECT id, title
+        FROM recipes
+        ORDER BY id DESC
+    """
+    return db.query(sql)
+
+
 def get_recipe(recipe_id):
     """Return one recipe with its author's username."""
     sql = """

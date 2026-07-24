@@ -3,7 +3,7 @@
 import sqlite3
 
 from flask import Flask
-from flask import redirect, render_template, request, session
+from flask import abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import config
@@ -13,6 +13,12 @@ import recipes
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+
+def require_login():
+    """Stop the request if the user is not logged in."""
+    if "user_id" not in session:
+        abort(403)
 
 
 @app.route("/")
@@ -96,8 +102,7 @@ def logout():
 @app.route("/new_recipe")
 def new_recipe():
     """Show the form for adding a recipe."""
-    if "user_id" not in session:
-        return redirect("/")
+    require_login()
 
     return render_template("new_recipe.html")
 
@@ -105,8 +110,7 @@ def new_recipe():
 @app.route("/create_recipe", methods=["POST"])
 def create_recipe():
     """Validate and save a new recipe."""
-    if "user_id" not in session:
-        return "You must be logged in to add a recipe.", 401
+    require_login()
 
     title = request.form["title"].strip()
     ingredients = request.form["ingredients"].strip()
@@ -156,8 +160,7 @@ def show_recipe(recipe_id):
 @app.route("/edit_recipe/<int:recipe_id>")
 def edit_recipe(recipe_id):
     """Show the form for editing a recipe."""
-    if "user_id" not in session:
-        return redirect("/")
+    require_login()
 
     recipe = recipes.get_recipe(recipe_id)
 
@@ -173,8 +176,7 @@ def edit_recipe(recipe_id):
 @app.route("/update_recipe", methods=["POST"])
 def update_recipe():
     """Validate and update an existing recipe."""
-    if "user_id" not in session:
-        return "You must be logged in to edit a recipe.", 401
+    require_login()
 
     try:
         recipe_id = int(request.form["recipe_id"])
@@ -223,8 +225,7 @@ def update_recipe():
 )
 def remove_recipe(recipe_id):
     """Show a confirmation page or delete a recipe."""
-    if "user_id" not in session:
-        return redirect("/")
+    require_login()
 
     recipe = recipes.get_recipe(recipe_id)
 

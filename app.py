@@ -215,3 +215,36 @@ def update_recipe():
     )
 
     return redirect("/recipe/" + str(recipe_id))
+
+
+@app.route(
+    "/remove_recipe/<int:recipe_id>",
+    methods=["GET", "POST"],
+)
+def remove_recipe(recipe_id):
+    """Show a confirmation page or delete a recipe."""
+    if "user_id" not in session:
+        return redirect("/")
+
+    recipe = recipes.get_recipe(recipe_id)
+
+    if recipe is None:
+        return "Recipe not found.", 404
+
+    if recipe["user_id"] != session["user_id"]:
+        return "You are not allowed to delete this recipe.", 403
+
+    if request.method == "GET":
+        return render_template(
+            "remove_recipe.html",
+            recipe=recipe,
+        )
+
+    if "remove" in request.form:
+        recipes.delete_recipe(recipe_id)
+        return redirect("/")
+
+    if "back" in request.form:
+        return redirect("/recipe/" + str(recipe_id))
+
+    return "Invalid action.", 400

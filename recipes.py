@@ -91,3 +91,18 @@ def delete_recipe(recipe_id):
         WHERE id = ?
     """
     db.execute(sql, [recipe_id])
+
+
+def find_recipes(query):
+    """Return recipes matching the search query."""
+    sql = """
+        SELECT id, title
+        FROM recipes
+        WHERE title LIKE ?
+           OR ingredients LIKE ?
+           OR instructions LIKE ?
+        ORDER BY id DESC
+    """
+    like = "%" + query + "%"
+
+    return db.query(sql, [like, like, like])

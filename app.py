@@ -28,6 +28,26 @@ def index():
     return render_template("index.html", recipes=all_recipes)
 
 
+@app.route("/find_recipe")
+def find_recipe():
+    """Show the recipe search form and search results."""
+    query = request.args.get("query", "").strip()
+
+    if len(query) > 100:
+        return "The search query must contain at most 100 characters.", 400
+
+    if query:
+        results = recipes.find_recipes(query)
+    else:
+        results = []
+
+    return render_template(
+        "find_recipe.html",
+        query=query,
+        results=results,
+    )
+
+
 @app.route("/register")
 def register():
     """Show the registration form."""

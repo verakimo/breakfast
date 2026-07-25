@@ -192,10 +192,15 @@ def logout():
 
 @app.route("/new_recipe")
 def new_recipe():
-    """Show the form for adding a recipe."""
+    """Show the form for adding a new recipe."""
     require_login()
 
-    return render_template("new_recipe.html")
+    classification_groups = recipes.get_classification_groups()
+
+    return render_template(
+        "new_recipe.html",
+        classification_groups=classification_groups,
+    )
 
 
 @app.route("/create_recipe", methods=["POST"])
@@ -226,12 +231,62 @@ def create_recipe():
 
     user_id = session["user_id"]
 
+    classification_groups = recipes.get_classification_groups()
+
+    allowed_options = {
+        group["name"]: {
+            str(option["id"])
+            for option in group["options"]
+        }
+        for group in classification_groups
+    }
+
+    breakfast_feature_ids = request.form.getlist(
+        "breakfast_features"
+    )
+    breakfast_type_ids = [
+        value
+        for value in request.form.getlist("breakfast_type")
+        if value
+    ]
+    diet_ids = request.form.getlist("diets")
+
+    if len(breakfast_type_ids) != 1:
+        return "Choose exactly one breakfast type.", 400
+
+    if not set(breakfast_feature_ids).issubset(
+        allowed_options["Breakfast feature"]
+    ):
+        return "Invalid breakfast feature.", 400
+
+    if not set(breakfast_type_ids).issubset(
+        allowed_options["Breakfast type"]
+    ):
+        return "Invalid breakfast type.", 400
+
+    if not set(diet_ids).issubset(
+        allowed_options["Diet"]
+    ):
+        return "Invalid diet option.", 400
+
+    selected_values = (
+        breakfast_feature_ids
+        + breakfast_type_ids
+        + diet_ids
+    )
+
+    selected_option_ids = [
+        int(value)
+        for value in dict.fromkeys(selected_values)
+    ]
+
     recipe_id = recipes.add_recipe(
         title,
         ingredients,
         instructions,
         preparation_time,
         user_id,
+        selected_option_ids,
     )
 
     return redirect("/recipe/" + str(recipe_id))
@@ -245,7 +300,13 @@ def show_recipe(recipe_id):
     if recipe is None:
         return "Recipe not found.", 404
 
-    return render_template("recipe.html", recipe=recipe)
+    classifications = recipes.get_classifications(recipe_id)
+
+    return render_template(
+    "recipe.html",
+    recipe=recipe,
+    classifications=classifications,
+    )
 
 
 @app.route("/edit_recipe/<int:recipe_id>")
@@ -261,7 +322,17 @@ def edit_recipe(recipe_id):
     if recipe["user_id"] != session["user_id"]:
         return "You are not allowed to edit this recipe.", 403
 
-    return render_template("edit_recipe.html", recipe=recipe)
+    classification_groups = recipes.get_classification_groups()
+    selected_option_ids = recipes.get_classification_option_ids(
+        recipe_id
+    )
+
+    return render_template(
+    "edit_recipe.html",
+    recipe=recipe,
+    classification_groups=classification_groups,
+    selected_option_ids=selected_option_ids,
+    )
 
 
 @app.route("/update_recipe", methods=["POST"])
@@ -299,12 +370,64 @@ def update_recipe():
     if preparation_time <= 0:
         return "Preparation time must be greater than zero.", 400
 
+    classification_groups = recipes.get_classification_groups()
+
+    allowed_options = {
+        group["name"]: {
+            str(option["id"])
+            for option in group["options"]
+        }
+        for group in classification_groups
+    }
+
+    breakfast_feature_ids = request.form.getlist(
+        "breakfast_features"
+    )
+
+    breakfast_type_ids = [
+        value
+        for value in request.form.getlist("breakfast_type")
+        if value
+    ]
+
+    diet_ids = request.form.getlist("diets")
+
+    if len(breakfast_type_ids) != 1:
+        return "Choose exactly one breakfast type.", 400
+
+    if not set(breakfast_feature_ids).issubset(
+        allowed_options["Breakfast feature"]
+    ):
+        return "Invalid breakfast feature.", 400
+
+    if not set(breakfast_type_ids).issubset(
+        allowed_options["Breakfast type"]
+    ):
+        return "Invalid breakfast type.", 400
+
+    if not set(diet_ids).issubset(
+        allowed_options["Diet"]
+    ):
+        return "Invalid diet option.", 400
+
+    selected_values = (
+        breakfast_feature_ids
+        + breakfast_type_ids
+        + diet_ids
+    )
+
+    selected_option_ids = [
+        int(value)
+        for value in dict.fromkeys(selected_values)
+    ]
+
     recipes.update_recipe(
         recipe_id,
         title,
         ingredients,
         instructions,
         preparation_time,
+        selected_option_ids,
     )
 
     return redirect("/recipe/" + str(recipe_id))

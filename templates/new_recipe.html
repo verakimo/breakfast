@@ -39,6 +39,63 @@
           type="number" min="1" required>
       </p>
 
+      <h3>Classifications</h3>
+
+      {% for group in classification_groups %}
+        <fieldset>
+          <legend>{{ group.name }}</legend>
+
+          {% if group.name == "Breakfast type" %}
+            <label for="classification-{{ group.id }}">
+              Choose one option
+            </label><br>
+
+            <select
+              id="classification-{{ group.id }}"
+              name="breakfast_type"
+              required
+            >
+
+              <option value="" selected disabled>
+                Choose a breakfast type
+              </option>
+
+              {% for option in group.options %}
+                <option value="{{ option.id }}">
+                  {{ option.name }}
+                </option>
+              {% endfor %}
+            </select>
+
+          {% elif group.name == "Breakfast feature" %}
+            {% for option in group.options %}
+              <label>
+                <input
+                  type="checkbox"
+                  name="breakfast_features"
+                  value="{{ option.id }}"
+                >
+                {{ option.name }}
+              </label>
+              <br>
+            {% endfor %}
+
+          {% elif group.name == "Diet" %}
+            {% for option in group.options %}
+              <label>
+                <input
+                  type="checkbox"
+                  name="diets"
+                  value="{{ option.id }}"
+                >
+                {{ option.name }}
+              </label>
+              <br>
+            {% endfor %}
+          {% endif %}
+        </fieldset>
+      {% endfor %}
+
       <button type="submit">Add recipe</button>
     </form>
 

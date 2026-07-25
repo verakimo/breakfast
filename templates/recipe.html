@@ -35,6 +35,19 @@
         Added: {{ recipe.created_at }}
       </p>
 
+      {% if classifications %}
+        <section>
+          <h3>Classifications</h3>
+
+          {% for group in classifications %}
+            <p>
+              <strong>{{ group.name }}:</strong>
+              {{ group.options | join(", ") }}
+            </p>
+          {% endfor %}
+        </section>
+      {% endif %}
+
       <h3>Ingredients</h3>
       <pre>{{ recipe.ingredients }}</pre>
 

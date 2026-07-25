@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add profile picture | Hyvä aamiainen</title>
+</head>
+<body>
+  <header>
+    <h1>Hyvä aamiainen</h1>
+    <p>Breakfast recipes worth waking up for!</p>
+  </header>
+
+  <main>
+    <h2>Add or change profile picture</h2>
+
+    <form
+      action="/add_image"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <p>
+        <label for="image">Choose a JPEG image</label><br>
+        <input
+          id="image"
+          name="image"
+          type="file"
+          accept="image/jpeg"
+          required
+        >
+      </p>
+
+      <button type="submit">Save profile picture</button>
+    </form>
+
+    <p>
+      <a href="/user/{{ session.user_id }}">Return to your profile</a>
+    </p>
+  </main>
+</body>
+</html>

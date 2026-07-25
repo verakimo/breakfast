@@ -12,24 +12,11 @@
   </header>
 
   <main>
-    <p><a href="/find_recipe">Search recipes</a></p>
-
-    <section>
-      <h2>Recipes</h2>
-
-      {% for recipe in recipes %}
-        <p>
-          <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
-        </p>
-      {% else %}
-        <p>No recipes have been added yet.</p>
-      {% endfor %}
-    </section>
-
     {% if session.username %}
       <section>
         <h2>Welcome, {{ session.username }}!</h2>
         <p>You are logged in.</p>
+        <p><a href="/user/{{ session.user_id }}">View my profile</a></p>
         <p><a href="/new_recipe">Add a recipe</a></p>
         <p><a href="/logout">Log out</a></p>
       </section>
@@ -71,6 +58,20 @@
         </p>
       </section>
     {% endif %}
+
+    <p><a href="/find_recipe">Search recipes</a></p>
+
+    <section>
+      <h2>Recipes</h2>
+
+      {% for recipe in recipes %}
+        <p>
+          <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
+        </p>
+      {% else %}
+        <p>No recipes have been added yet.</p>
+      {% endfor %}
+    </section>
   </main>
 </body>
 </html>

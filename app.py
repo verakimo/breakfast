@@ -3,12 +3,13 @@
 import sqlite3
 
 from flask import Flask
-from flask import abort, redirect, render_template, request, session
+from flask import abort, make_response, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 import config
 import db
 import recipes
+import users
 
 
 app = Flask(__name__)
@@ -26,6 +27,76 @@ def index():
     """Show the home page and the list of recipes."""
     all_recipes = recipes.get_recipes()
     return render_template("index.html", recipes=all_recipes)
+
+
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    """Show a user profile and their recipes."""
+    user = users.get_user(user_id)
+
+    if user is None:
+        abort(404)
+
+    user_recipes = users.get_recipes(user_id)
+
+    return render_template(
+        "user.html",
+        user=user,
+        recipes=user_recipes,
+    )
+
+
+@app.route("/add_image", methods=["GET", "POST"])
+def add_image():
+    """Show the image form and save a profile picture."""
+    require_login()
+
+    if request.method == "GET":
+        return render_template("add_image.html")
+
+    image_file = request.files.get("image")
+
+    if image_file is None or image_file.filename == "":
+        return "Choose an image file.", 400
+
+    if image_file.mimetype != "image/jpeg":
+        return "The profile picture must be a JPEG image.", 400
+
+    image = image_file.read()
+
+    if not image:
+        return "The image file must not be empty.", 400
+
+    if len(image) > 100 * 1024:
+        return "The image file must not be larger than 100 KB.", 400
+
+    users.update_image(session["user_id"], image)
+
+    return redirect("/user/" + str(session["user_id"]))
+
+
+@app.route("/image/<int:user_id>")
+def show_image(user_id):
+    """Return a user's profile picture."""
+    image = users.get_image(user_id)
+
+    if image is None:
+        abort(404)
+
+    response = make_response(image)
+    response.headers["Content-Type"] = "image/jpeg"
+
+    return response
+
+
+@app.route("/delete_image", methods=["POST"])
+def delete_image():
+    """Delete the logged-in user's profile picture."""
+    require_login()
+
+    users.delete_image(session["user_id"])
+
+    return redirect("/user/" + str(session["user_id"]))
 
 
 @app.route("/find_recipe")

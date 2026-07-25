@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ user.username }} | Hyvä aamiainen</title>
+</head>
+<body>
+  <header>
+    <h1>Hyvä aamiainen</h1>
+    <p>Breakfast recipes worth waking up for!</p>
+  </header>
+
+  <main>
+    <h2>{{ user.username }}</h2>
+
+    {% if user.has_image %}
+      <p>
+        <img
+          src="/image/{{ user.id }}"
+          alt="Profile picture of {{ user.username }}"
+          width="200"
+          height="200"
+          style="object-fit: cover;"
+        >
+      </p>
+    {% endif %}
+
+    {% if session.user_id == user.id %}
+      {% if user.has_image %}
+        <p>
+          <a href="/add_image">Change profile picture</a>
+        </p>
+
+        <form action="/delete_image" method="post">
+          <button type="submit">Delete profile picture</button>
+        </form>
+      {% else %}
+        <p>
+          <a href="/add_image">Add profile picture</a>
+        </p>
+      {% endif %}
+    {% endif %}
+
+    <p>
+      Recipes added: {{ recipes | count }}
+    </p>
+
+    <section>
+      <h3>Recipes</h3>
+
+      {% for recipe in recipes %}
+        <p>
+          <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a><br>
+          Added: {{ recipe.created_at }}
+        </p>
+      {% else %}
+        <p>This user has not added any recipes yet.</p>
+      {% endfor %}
+    </section>
+
+    <p><a href="/">Return to the home page</a></p>
+  </main>
+</body>
+</html>

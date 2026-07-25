@@ -30,7 +30,7 @@
       {% endif %}
 
       <p>
-        Added by {{ recipe.username }}<br>
+        Added by <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a><br>
         Preparation time: {{ recipe.preparation_time }} minutes<br>
         Added: {{ recipe.created_at }}
       </p>

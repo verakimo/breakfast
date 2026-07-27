@@ -29,11 +29,46 @@
         </p>
       {% endif %}
 
-      <p>
-        Added by <a href="/user/{{ recipe.user_id }}">{{ recipe.username }}</a><br>
-        Preparation time: {{ recipe.preparation_time }} minutes<br>
-        Added: {{ recipe.created_at }}
-      </p>
+      <div class="recipe-meta">
+        <div class="recipe-details">
+          <p>
+            <strong>Added by:</strong>
+            <a href="/user/{{ recipe.user_id }}">
+              {{ recipe.username }}
+            </a>
+          </p>
+
+          <p>
+            <strong>Preparation time:</strong>
+            {{ recipe.preparation_time }} minutes
+          </p>
+
+          <p>
+            <strong>Added:</strong>
+            {{ recipe.created_at }}
+          </p>
+        </div>
+
+        <section class="review-summary">
+          <h4 class="review-summary-title">
+            Ratings and comments
+          </h4>
+
+          {% if review_summary.rating_count > 0 %}
+            <p>
+              <strong>Average rating:</strong>
+              <span class="rating-star" aria-hidden="true">★</span>
+              {{ review_summary.average_rating }} / 5
+            </p>
+
+            <p>{{ review_summary.rating_count }} ratings</p>
+          {% else %}
+            <p>No ratings yet.</p>
+          {% endif %}
+
+          <p>{{ review_summary.comment_count }} comments</p>
+        </section>
+      </div>
 
       {% if classifications %}
         <section>
@@ -54,6 +89,82 @@
       <h3>Preparation instructions</h3>
       <pre>{{ recipe.instructions }}</pre>
     </article>
+
+    {% if "user_id" in session %}
+      <section>
+        <h3>Add a review</h3>
+
+        <form
+          action="/recipe/{{ recipe.id }}/comment"
+          method="post"
+        >
+          <p>
+            <label for="rating">Rating</label><br>
+
+            <select id="rating" name="rating" required>
+              <option value="" selected disabled>
+                Choose a rating
+              </option>
+              <option value="5">5 — Excellent</option>
+              <option value="4">4 — Good</option>
+              <option value="3">3 — Average</option>
+              <option value="2">2 — Poor</option>
+              <option value="1">1 — Very poor</option>
+            </select>
+          </p>
+
+          <p>
+            <label for="comment-text">Comment</label><br>
+
+            <textarea
+              id="comment-text"
+              name="comment_text"
+              rows="5"
+              maxlength="1000"
+              required
+            ></textarea>
+          </p>
+
+          <button type="submit">Add review</button>
+        </form>
+      </section>
+    {% else %}
+      <p>
+        <a href="/login">Log in</a>
+        to leave a rating and comment.
+      </p>
+    {% endif %}
+
+    <section>
+    <h3>Reviews</h3>
+
+    {% if comments %}
+      {% for comment in comments %}
+        <article>
+          <p>
+            <strong>
+              <a href="/user/{{ comment.user_id }}">
+                {{ comment.username }}
+              </a>
+            </strong>
+
+            <span class="rating-star" aria-hidden="true">★</span>
+            {{ comment.rating }} / 5
+          </p>
+
+          <p class="comment-text">
+            {{ comment.comment_text }}
+          </p>
+
+          <p>
+            <small>{{ comment.created_at }}</small>
+          </p>
+        </article>
+      {% endfor %}
+    {% else %}
+      <p>No reviews yet.</p>
+    {% endif %}
+  </section>
 
     <p><a href="/">Return to the home page</a></p>
   </main>

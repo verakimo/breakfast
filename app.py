@@ -6,6 +6,7 @@ from flask import Flask
 from flask import abort, make_response, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
+import comments
 import config
 import db
 import recipes
@@ -301,12 +302,60 @@ def show_recipe(recipe_id):
         return "Recipe not found.", 404
 
     classifications = recipes.get_classifications(recipe_id)
+    recipe_comments = comments.get_comments(recipe_id)
+    review_summary = comments.get_review_summary(recipe_id)
 
     return render_template(
     "recipe.html",
     recipe=recipe,
     classifications=classifications,
+    comments=recipe_comments,
+    review_summary=review_summary,
     )
+
+
+@app.route(
+    "/recipe/<int:recipe_id>/comment",
+    methods=["POST"],
+)
+def add_comment(recipe_id):
+    """Add a comment and rating to a recipe."""
+    require_login()
+
+    recipe = recipes.get_recipe(recipe_id)
+
+    if recipe is None:
+        abort(404)
+
+    comment_text = request.form.get(
+        "comment_text",
+        "",
+    ).strip()
+
+    if not comment_text:
+        return "The comment must not be empty.", 400
+
+    if len(comment_text) > 1000:
+        return "The comment is too long.", 400
+
+    rating_value = request.form.get("rating", "")
+
+    try:
+        rating = int(rating_value)
+    except ValueError:
+        return "Choose a rating from 1 to 5.", 400
+
+    if rating < 1 or rating > 5:
+        return "Choose a rating from 1 to 5.", 400
+
+    comments.add_comment(
+        recipe_id,
+        session["user_id"],
+        comment_text,
+        rating,
+    )
+
+    return redirect("/recipe/" + str(recipe_id))
 
 
 @app.route("/edit_recipe/<int:recipe_id>")

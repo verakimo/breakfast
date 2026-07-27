@@ -64,9 +64,41 @@
     <section>
       <h2>Recipes</h2>
 
+      <p>
+        <small>
+          L = Lactose-free,
+          G = Gluten-free,
+          V = Vegan,
+          FODMAP = Low FODMAP
+        </small>
+      </p>
+
       {% for recipe in recipes %}
         <p>
           <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
+
+          {% if recipe.lactose_free
+                or recipe.gluten_free
+                or recipe.vegan
+                or recipe.low_fodmap %}
+            <span class="diet-labels">
+              {% if recipe.lactose_free %}
+                <abbr class="diet-label" title="Lactose-free">L</abbr>
+              {% endif %}
+
+              {% if recipe.gluten_free %}
+                <abbr class="diet-label" title="Gluten-free">G</abbr>
+              {% endif %}
+
+              {% if recipe.vegan %}
+                <abbr class="diet-label" title="Vegan">V</abbr>
+              {% endif %}
+
+              {% if recipe.low_fodmap %}
+                <abbr class="diet-label" title="Low FODMAP">FODMAP</abbr>
+              {% endif %}
+            </span>
+          {% endif %}
         </p>
       {% else %}
         <p>No recipes have been added yet.</p>

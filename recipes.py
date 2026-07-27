@@ -67,11 +67,52 @@ def add_recipe(
 
 
 def get_recipes():
-    """Return all recipes, newest first."""
+    """Return all recipes with diet labels, newest first."""
     sql = """
-        SELECT id, title
-        FROM recipes
-        ORDER BY id DESC
+        SELECT
+            r.id,
+            r.title,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Lactose-free'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS lactose_free,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Gluten-free'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS gluten_free,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Vegan'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS vegan,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Low FODMAP'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS low_fodmap
+        FROM recipes r
+        LEFT JOIN recipe_classifications rc
+            ON rc.recipe_id = r.id
+        LEFT JOIN classification_options co
+            ON co.id = rc.option_id
+        LEFT JOIN classification_groups cg
+            ON cg.id = co.group_id
+        GROUP BY r.id, r.title
+        ORDER BY r.id DESC
     """
     return db.query(sql)
 
@@ -175,19 +216,44 @@ def delete_recipe(recipe_id):
     db.execute(sql, [recipe_id])
 
 
-def find_recipes(query):
-    """Return recipes matching the search query."""
+def find_recipes(query, breakfast_type_id):
+    """Return recipes matching the search filters."""
     sql = """
-        SELECT id, title
-        FROM recipes
-        WHERE title LIKE ?
-           OR ingredients LIKE ?
-           OR instructions LIKE ?
-        ORDER BY id DESC
+        SELECT
+            r.id,
+            r.title
+        FROM recipes r
+        WHERE (
+            ? = ''
+            OR r.title LIKE ?
+            OR r.ingredients LIKE ?
+            OR r.instructions LIKE ?
+        )
+        AND (
+            ? IS NULL
+            OR EXISTS (
+                SELECT 1
+                FROM recipe_classifications rc
+                WHERE rc.recipe_id = r.id
+                  AND rc.option_id = ?
+            )
+        )
+        ORDER BY r.id DESC
     """
+
     like = "%" + query + "%"
 
-    return db.query(sql, [like, like, like])
+    return db.query(
+        sql,
+        [
+            query,
+            like,
+            like,
+            like,
+            breakfast_type_id,
+            breakfast_type_id,
+        ],
+    )
 
 
 def get_classification_groups():

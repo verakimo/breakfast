@@ -26,12 +26,28 @@
         >
       </p>
 
+      <p>
+        <label for="breakfast_type">Breakfast type</label><br>
+        <select id="breakfast_type" name="breakfast_type">
+          <option value="">All breakfast types</option>
+
+          {% for option in breakfast_type_options %}
+            <option
+              value="{{ option.id }}"
+              {% if option.id == breakfast_type_id %}selected{% endif %}
+            >
+              {{ option.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </p>
+
       <button type="submit">Search</button>
     </form>
 
     <p><a href="/">Return to the home page</a></p>
 
-    {% if query %}
+    {% if query or breakfast_type_id is not none %}
       <section>
         <h2>Search results</h2>
 

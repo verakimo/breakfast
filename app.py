@@ -105,11 +105,46 @@ def find_recipe():
     """Show the recipe search form and search results."""
     query = request.args.get("query", "").strip()
 
+    breakfast_type_value = request.args.get(
+        "breakfast_type",
+        "",
+    ).strip()
+
+    classification_groups = recipes.get_classification_groups()
+
+    breakfast_type_options = next(
+        (
+            group["options"]
+            for group in classification_groups
+            if group["name"] == "Breakfast type"
+        ),
+        [],
+    )
+
+    breakfast_type_id = None
+
+    if breakfast_type_value:
+        try:
+            breakfast_type_id = int(breakfast_type_value)
+        except ValueError:
+            return "Invalid breakfast type.", 400
+
+        valid_option_ids = [
+            option["id"]
+            for option in breakfast_type_options
+        ]
+
+        if breakfast_type_id not in valid_option_ids:
+            return "Invalid breakfast type.", 400
+
     if len(query) > 100:
         return "The search query must contain at most 100 characters.", 400
 
-    if query:
-        results = recipes.find_recipes(query)
+    if query or breakfast_type_id is not None:
+        results = recipes.find_recipes(
+            query,
+            breakfast_type_id,
+        )
     else:
         results = []
 
@@ -117,6 +152,8 @@ def find_recipe():
         "find_recipe.html",
         query=query,
         results=results,
+        breakfast_type_options=breakfast_type_options,
+        breakfast_type_id=breakfast_type_id,
     )
 
 

@@ -33,6 +33,11 @@
         </p>
 
         <form action="/delete_image" method="post">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+          >
           <button type="submit">Delete profile picture</button>
         </form>
       {% else %}

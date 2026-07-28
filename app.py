@@ -1,5 +1,6 @@
 """Flask application for the Hyvä aamiainen project."""
 
+import secrets
 import sqlite3
 
 from flask import Flask
@@ -23,9 +24,28 @@ def require_login():
         abort(403)
 
 
+def check_csrf():
+    """Stop the request if the CSRF token is missing or invalid."""
+    form_token = request.form.get("csrf_token")
+    session_token = session.get("csrf_token")
+
+    if not form_token or not session_token:
+        abort(403)
+
+    if form_token != session_token:
+        abort(403)
+
+
+def ensure_csrf_token():
+    """Create a CSRF token if the session does not have one."""
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(16)
+
+
 @app.route("/")
 def index():
     """Show the home page and the list of recipes."""
+    ensure_csrf_token()
     all_recipes = recipes.get_recipes()
     return render_template("index.html", recipes=all_recipes)
 
@@ -51,6 +71,7 @@ def show_user(user_id):
 def add_image():
     """Show the image form and save a profile picture."""
     require_login()
+    check_csrf()
 
     if request.method == "GET":
         return render_template("add_image.html")
@@ -94,6 +115,7 @@ def show_image(user_id):
 def delete_image():
     """Delete the logged-in user's profile picture."""
     require_login()
+    check_csrf()
 
     users.delete_image(session["user_id"])
 
@@ -160,12 +182,15 @@ def find_recipe():
 @app.route("/register")
 def register():
     """Show the registration form."""
+    ensure_csrf_token()
     return render_template("register.html")
 
 
 @app.route("/create", methods=["POST"])
 def create():
     """Create a new user account."""
+    check_csrf()
+
     username = request.form["username"].strip()
     password1 = request.form["password1"]
     password2 = request.form["password2"]
@@ -196,6 +221,7 @@ def create():
 @app.route("/login", methods=["POST"])
 def login():
     """Log a user in when the username and password are correct."""
+    check_csrf()
     username = request.form["username"].strip()
     password = request.form["password"]
 
@@ -217,13 +243,17 @@ def login():
     session.clear()
     session["user_id"] = user["id"]
     session["username"] = user["username"]
+    session["csrf_token"] = secrets.token_hex(16)
 
     return redirect("/")
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     """Log the current user out."""
+    require_login()
+    check_csrf()
+
     session.clear()
     return redirect("/")
 
@@ -245,6 +275,7 @@ def new_recipe():
 def create_recipe():
     """Validate and save a new recipe."""
     require_login()
+    check_csrf()
 
     title = request.form["title"].strip()
     ingredients = request.form["ingredients"].strip()
@@ -358,6 +389,7 @@ def show_recipe(recipe_id):
 def add_comment(recipe_id):
     """Add a comment and rating to a recipe."""
     require_login()
+    check_csrf()
 
     recipe = recipes.get_recipe(recipe_id)
 
@@ -425,6 +457,7 @@ def edit_recipe(recipe_id):
 def update_recipe():
     """Validate and update an existing recipe."""
     require_login()
+    check_csrf()
 
     try:
         recipe_id = int(request.form["recipe_id"])
@@ -526,6 +559,7 @@ def update_recipe():
 def remove_recipe(recipe_id):
     """Show a confirmation page or delete a recipe."""
     require_login()
+    check_csrf()
 
     recipe = recipes.get_recipe(recipe_id)
 

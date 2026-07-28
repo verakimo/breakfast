@@ -19,6 +19,11 @@
       method="post"
       enctype="multipart/form-data"
     >
+      <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ session.csrf_token }}"
+      >
       <p>
         <label for="image">Choose a JPEG image</label><br>
         <input

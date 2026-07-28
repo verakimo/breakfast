@@ -18,13 +18,26 @@
         <p>You are logged in.</p>
         <p><a href="/user/{{ session.user_id }}">View my profile</a></p>
         <p><a href="/new_recipe">Add a recipe</a></p>
-        <p><a href="/logout">Log out</a></p>
+        <form action="/logout" method="post">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+          >
+
+          <button type="submit">Log out</button>
+        </form>
       </section>
     {% else %}
       <section>
         <h2>Log in</h2>
 
         <form action="/login" method="post">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+          >
           <p>
             <label for="username">Username</label><br>
             <input

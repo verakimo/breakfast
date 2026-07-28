@@ -21,6 +21,12 @@
         value="{{ recipe.id }}"
       >
 
+      <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ session.csrf_token }}"
+      >
+
       <p>
         <label for="title">Recipe title</label><br>
         <input

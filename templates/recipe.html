@@ -98,6 +98,11 @@
           action="/recipe/{{ recipe.id }}/comment"
           method="post"
         >
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+          >
           <p>
             <label for="rating">Rating</label><br>
 

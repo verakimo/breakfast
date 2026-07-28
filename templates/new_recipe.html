@@ -15,6 +15,11 @@
     <h2>Add a recipe</h2>
 
     <form action="/create_recipe" method="post">
+      <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ session.csrf_token }}"
+      >
       <p>
         <label for="title">Recipe title</label><br>
         <input id="title" name="title" type="text"

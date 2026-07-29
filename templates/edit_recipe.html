@@ -14,6 +14,12 @@
   <main>
     <h2>Edit recipe</h2>
 
+    {% for message in get_flashed_messages() %}
+      <p>
+        <strong>{{ message }}</strong>
+      </p>
+    {% endfor %}
+
     <form action="/update_recipe" method="post">
       <input
         type="hidden"
@@ -33,7 +39,7 @@
           id="title"
           name="title"
           type="text"
-          value="{{ recipe.title }}"
+          value="{{ filled.title }}"
           maxlength="100"
           required
         >
@@ -48,7 +54,7 @@
           cols="50"
           maxlength="5000"
           required
-        >{{ recipe.ingredients }}</textarea>
+        >{{ filled.ingredients }}</textarea>
       </p>
 
       <p>
@@ -60,7 +66,7 @@
           cols="50"
           maxlength="5000"
           required
-        >{{ recipe.instructions }}</textarea>
+        >{{ filled.instructions }}</textarea>
       </p>
 
       <p>
@@ -69,7 +75,7 @@
           id="preparation_time"
           name="preparation_time"
           type="number"
-          value="{{ recipe.preparation_time }}"
+          value="{{ filled.preparation_time }}"
           min="1"
           required
         >
@@ -99,7 +105,7 @@
               {% for option in group.options %}
                 <option
                   value="{{ option.id }}"
-                  {% if option.id in selected_option_ids %}
+                  {% if option.id|string in selected_option_ids %}
                     selected
                   {% endif %}
                 >
@@ -110,15 +116,16 @@
 
           {% elif group.name == "Breakfast feature" %}
             {% for option in group.options %}
-              <label>
-                <input
-                  type="checkbox"
-                  name="breakfast_features"
-                  value="{{ option.id }}"
-                  {% if option.id in selected_option_ids %}
-                    checked
-                  {% endif %}
-                >
+              <input
+                id="breakfast-feature-{{ option.id }}"
+                type="checkbox"
+                name="breakfast_features"
+                value="{{ option.id }}"
+                {% if option.id|string in selected_option_ids %}
+                  checked
+                {% endif %}
+              >
+              <label for="breakfast-feature-{{ option.id }}">
                 {{ option.name }}
               </label>
               <br>
@@ -126,15 +133,16 @@
 
           {% elif group.name == "Diet" %}
             {% for option in group.options %}
-              <label>
-                <input
-                  type="checkbox"
-                  name="diets"
-                  value="{{ option.id }}"
-                  {% if option.id in selected_option_ids %}
-                    checked
-                  {% endif %}
-                >
+              <input
+                id="diet-{{ option.id }}"
+                type="checkbox"
+                name="diets"
+                value="{{ option.id }}"
+                {% if option.id|string in selected_option_ids %}
+                  checked
+                {% endif %}
+              >
+              <label for="diet-{{ option.id }}">
                 {{ option.name }}
               </label>
               <br>

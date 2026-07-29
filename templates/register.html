@@ -15,6 +15,12 @@
   <main>
     <h2>Create an account</h2>
 
+    {% for message in get_flashed_messages() %}
+      <p>
+        <strong>{{ message }}</strong>
+      </p>
+    {% endfor %}
+
     <form action="/create" method="post">
       <input
         type="hidden"
@@ -27,6 +33,7 @@
           id="username"
           name="username"
           type="text"
+          value="{{ filled.username }}"
           minlength="3"
           maxlength="30"
           autocomplete="username"

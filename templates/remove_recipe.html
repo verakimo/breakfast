@@ -24,7 +24,7 @@
         value="{{ session.csrf_token }}"
       >
       <button type="submit" name="remove">Delete recipe</button>
-      <button type="submit" name="back">Go back</button>
+      <a href="/recipe/{{ recipe.id }}">Cancel</a>
     </form>
   </main>
 </body>

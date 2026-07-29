@@ -22,6 +22,12 @@
     <article>
       <h2>{{ recipe.title }}</h2>
 
+      {% for message in get_flashed_messages() %}
+        <p>
+          <strong>{{ message }}</strong>
+        </p>
+      {% endfor %}
+
       {% if session.user_id == recipe.user_id %}
         <p>
           <a href="/edit_recipe/{{ recipe.id }}">Edit recipe</a>
@@ -61,12 +67,18 @@
               {{ review_summary.average_rating }} / 5
             </p>
 
-            <p>{{ review_summary.rating_count }} ratings</p>
+            <p>
+              {{ review_summary.rating_count }}
+              rating{% if review_summary.rating_count|int != 1 %}s{% endif %}
+            </p>
           {% else %}
             <p>No ratings yet.</p>
           {% endif %}
 
-          <p>{{ review_summary.comment_count }} comments</p>
+          <p>
+            {{ review_summary.comment_count }}
+            comment{% if review_summary.comment_count|int != 1 %}s{% endif %}
+          </p>
         </section>
       </div>
 
@@ -107,14 +119,48 @@
             <label for="rating">Rating</label><br>
 
             <select id="rating" name="rating" required>
-              <option value="" selected disabled>
+              <option
+                value=""
+                disabled
+                {% if not filled_review.rating %}selected{% endif %}
+              >
                 Choose a rating
               </option>
-              <option value="5">5 — Excellent</option>
-              <option value="4">4 — Good</option>
-              <option value="3">3 — Average</option>
-              <option value="2">2 — Poor</option>
-              <option value="1">1 — Very poor</option>
+
+              <option
+                value="5"
+                {% if filled_review.rating == "5" %}selected{% endif %}
+              >
+                5 — Excellent
+              </option>
+
+              <option
+                value="4"
+                {% if filled_review.rating == "4" %}selected{% endif %}
+              >
+                4 — Good
+              </option>
+
+              <option
+                value="3"
+                {% if filled_review.rating == "3" %}selected{% endif %}
+              >
+                3 — Average
+              </option>
+
+              <option
+                value="2"
+                {% if filled_review.rating == "2" %}selected{% endif %}
+              >
+                2 — Poor
+              </option>
+
+              <option
+                value="1"
+                {% if filled_review.rating == "1" %}selected{% endif %}
+              >
+                1 — Very poor
+              </option>
             </select>
           </p>
 
@@ -127,7 +173,7 @@
               rows="5"
               maxlength="1000"
               required
-            ></textarea>
+            >{{ filled_review.comment_text }}</textarea>
           </p>
 
           <button type="submit">Add review</button>
@@ -135,7 +181,7 @@
       </section>
     {% else %}
       <p>
-        <a href="/login">Log in</a>
+        <a href="/">Log in</a>
         to leave a rating and comment.
       </p>
     {% endif %}
@@ -158,7 +204,7 @@
           </p>
 
           <p class="comment-text">
-            {{ comment.comment_text }}
+            {{ comment.comment_text | show_lines }}
           </p>
 
           <p>

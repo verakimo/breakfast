@@ -14,6 +14,12 @@
   <main>
     <h2>Add a recipe</h2>
 
+    {% for message in get_flashed_messages() %}
+      <p>
+        <strong>{{ message }}</strong>
+      </p>
+    {% endfor %}
+
     <form action="/create_recipe" method="post">
       <input
         type="hidden"
@@ -22,26 +28,50 @@
       >
       <p>
         <label for="title">Recipe title</label><br>
-        <input id="title" name="title" type="text"
-          maxlength="100" required>
+        <input
+          id="title"
+          name="title"
+          type="text"
+          value="{{ filled.title }}"
+          maxlength="100"
+          required
+        >
       </p>
 
       <p>
         <label for="ingredients">Ingredients</label><br>
-        <textarea id="ingredients" name="ingredients"
-          rows="8" cols="50" maxlength="5000" required></textarea>
+        <textarea
+          id="ingredients"
+          name="ingredients"
+          rows="8"
+          cols="50"
+          maxlength="5000"
+          required
+        >{{ filled.ingredients }}</textarea>
       </p>
 
       <p>
         <label for="instructions">Preparation instructions</label><br>
-        <textarea id="instructions" name="instructions"
-          rows="10" cols="50" maxlength="5000" required></textarea>
+        <textarea
+          id="instructions"
+          name="instructions"
+          rows="10"
+          cols="50"
+          maxlength="5000"
+          required
+        >{{ filled.instructions }}</textarea>
       </p>
 
       <p>
         <label for="preparation_time">Preparation time in minutes</label><br>
-        <input id="preparation_time" name="preparation_time"
-          type="number" min="1" required>
+        <input
+          id="preparation_time"
+          name="preparation_time"
+          type="number"
+          value="{{ filled.preparation_time }}"
+          min="1"
+          required
+        >
       </p>
 
       <h3>Classifications</h3>
@@ -61,12 +91,21 @@
               required
             >
 
-              <option value="" selected disabled>
+              <option
+                value=""
+                disabled
+                {% if not filled.breakfast_type %}selected{% endif %}
+              >
                 Choose a breakfast type
               </option>
 
               {% for option in group.options %}
-                <option value="{{ option.id }}">
+                <option
+                  value="{{ option.id }}"
+                  {% if filled.breakfast_type == option.id|string %}
+                    selected
+                  {% endif %}
+                >
                   {{ option.name }}
                 </option>
               {% endfor %}
@@ -74,12 +113,16 @@
 
           {% elif group.name == "Breakfast feature" %}
             {% for option in group.options %}
-              <label>
-                <input
-                  type="checkbox"
-                  name="breakfast_features"
-                  value="{{ option.id }}"
-                >
+              <input
+                id="breakfast-feature-{{ option.id }}"
+                type="checkbox"
+                name="breakfast_features"
+                value="{{ option.id }}"
+                {% if option.id|string in filled.breakfast_features %}
+                  checked
+                {% endif %}
+              >
+              <label for="breakfast-feature-{{ option.id }}">
                 {{ option.name }}
               </label>
               <br>
@@ -87,12 +130,16 @@
 
           {% elif group.name == "Diet" %}
             {% for option in group.options %}
-              <label>
-                <input
-                  type="checkbox"
-                  name="diets"
-                  value="{{ option.id }}"
-                >
+              <input
+                id="diet-{{ option.id }}"
+                type="checkbox"
+                name="diets"
+                value="{{ option.id }}"
+                {% if option.id|string in filled.diets %}
+                  checked
+                {% endif %}
+              >
+              <label for="diet-{{ option.id }}">
                 {{ option.name }}
               </label>
               <br>

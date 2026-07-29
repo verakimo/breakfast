@@ -13,6 +13,11 @@
 
   <main>
     <h2>Search recipes</h2>
+    {% for message in get_flashed_messages() %}
+      <p>
+        <strong>{{ message }}</strong>
+      </p>
+    {% endfor %}
 
     <form action="/find_recipe" method="get">
       <p>

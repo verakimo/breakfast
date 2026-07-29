@@ -14,6 +14,12 @@
   <main>
     <h2>Add or change profile picture</h2>
 
+    {% for message in get_flashed_messages() %}
+      <p>
+        <strong>{{ message }}</strong>
+      </p>
+    {% endfor %}
+
     <form
       action="/add_image"
       method="post"

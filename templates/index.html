@@ -9,6 +9,11 @@
   <header>
     <h1>Hyvä aamiainen</h1>
     <p>Breakfast recipes worth waking up for!</p>
+    {% for message in get_flashed_messages() %}
+      <p>
+        <strong>{{ message }}</strong>
+      </p>
+    {% endfor %}
   </header>
 
   <main>
@@ -44,6 +49,7 @@
               id="username"
               name="username"
               type="text"
+              value="{{ filled_login.username }}"
               maxlength="30"
               autocomplete="username"
               required

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>
+    {% block title %}{% endblock %} | Hyvä aamiainen
+  </title>
+  <link rel="stylesheet" href="/static/main.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Hyvä aamiainen</h1>
+    <p>Breakfast recipes worth waking up for!</p>
+  </header>
+
+  <nav class="site-nav" aria-label="Main navigation">
+    <ul>
+      <li><a href="/">Home page</a></li>
+      <li><a href="/find_recipe">Search recipes</a></li>
+    </ul>
+  </nav>
+
+  <div class="page-layout">
+    <main class="content">
+      {% for message in get_flashed_messages() %}
+        <p class="info">
+          {{ message }}
+        </p>
+      {% endfor %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <aside class="authentication" aria-label="Account">
+      {% if "user_id" in session %}
+        <h2>Welcome, {{ session.username }}!</h2>
+
+        <p>You are logged in.</p>
+
+        <p>
+          <a href="/user/{{ session.user_id }}">
+            View my profile
+          </a>
+        </p>
+
+        <p><a href="/new_recipe">Add a recipe</a></p>
+
+        <form action="/logout" method="post">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+          >
+          <button type="submit">Log out</button>
+        </form>
+      {% else %}
+        <h2>Log in</h2>
+
+        <form action="/login" method="post">
+          <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ session.csrf_token }}"
+          >
+
+          <p>
+            <label for="sidebar-username">Username</label><br>
+            <input
+              id="sidebar-username"
+              name="username"
+              type="text"
+              value="{% if filled_login is defined %}{{ filled_login.username }}{% endif %}"
+              maxlength="30"
+              autocomplete="username"
+              required
+            >
+          </p>
+
+          <p>
+            <label for="sidebar-password">Password</label><br>
+            <input
+              id="sidebar-password"
+              name="password"
+              type="password"
+              maxlength="100"
+              autocomplete="current-password"
+              required
+            >
+          </p>
+
+          <button type="submit">Log in</button>
+        </form>
+
+        <p>
+          Do not have an account?
+          <a href="/register">Create an account</a>
+        </p>
+      {% endif %}
+    </aside>
+  </div>
+</body>
+</html>

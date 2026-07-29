@@ -1,79 +1,57 @@
-<h1>Hyvä aamiainen</h1>
-<p>Breakfast recipes worth waking up for</p><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Create account | Hyvä aamiainen</title>
-</head>
-<body>
-  <header>
-    <h1>Hyvä aamiainen</h1>
-    <p>Breakfast recipes worth waking up for!</p>
-  </header>
+{% extends "layout.html" %}
 
-  <main>
-    <h2>Create an account</h2>
+{% block title %}Create account{% endblock %}
 
-    {% for message in get_flashed_messages() %}
-      <p>
-        <strong>{{ message }}</strong>
-      </p>
-    {% endfor %}
+{% block content %}
+  <h2>Create an account</h2>
 
-    <form action="/create" method="post">
-      <input
-        type="hidden"
-        name="csrf_token"
-        value="{{ session.csrf_token }}"
-      >
-      <p>
-        <label for="username">Username</label><br>
-        <input
-          id="username"
-          name="username"
-          type="text"
-          value="{{ filled.username }}"
-          minlength="3"
-          maxlength="30"
-          autocomplete="username"
-          required
-        >
-      </p>
-
-      <p>
-        <label for="password1">Password</label><br>
-        <input
-          id="password1"
-          name="password1"
-          type="password"
-          minlength="8"
-          maxlength="100"
-          autocomplete="new-password"
-          required
-        >
-      </p>
-
-      <p>
-        <label for="password2">Confirm password</label><br>
-        <input
-          id="password2"
-          name="password2"
-          type="password"
-          minlength="8"
-          maxlength="100"
-          autocomplete="new-password"
-          required
-        >
-      </p>
-
-      <button type="submit">Create account</button>
-    </form>
+  <form action="/create" method="post">
+    <input
+      type="hidden"
+      name="csrf_token"
+      value="{{ session.csrf_token }}"
+    >
 
     <p>
-      Already have an account?
-      <a href="/">Return to the home page</a>
+      <label for="username">Username</label><br>
+      <input
+        id="username"
+        name="username"
+        type="text"
+        value="{{ filled.username }}"
+        minlength="3"
+        maxlength="30"
+        autocomplete="username"
+        required
+      >
     </p>
-  </main>
-</body>
-</html>
+
+    <p>
+      <label for="password1">Password</label><br>
+      <input
+        id="password1"
+        name="password1"
+        type="password"
+        minlength="8"
+        maxlength="100"
+        autocomplete="new-password"
+        required
+      >
+    </p>
+
+    <p>
+      <label for="password2">Confirm password</label><br>
+      <input
+        id="password2"
+        name="password2"
+        type="password"
+        minlength="8"
+        maxlength="100"
+        autocomplete="new-password"
+        required
+      >
+    </p>
+
+    <button type="submit">Create account</button>
+  </form>
+{% endblock %}

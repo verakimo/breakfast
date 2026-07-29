@@ -37,10 +37,34 @@ def check_csrf():
         abort(403)
 
 
+def get_safe_next_page():
+    """Return a safe internal page for redirecting the user."""
+    next_page = (
+        request.form.get("next_page")
+        or request.args.get("next_page")
+        or "/"
+    )
+
+    if (
+        not next_page.startswith("/")
+        or next_page.startswith("//")
+        or "\\" in next_page
+    ):
+        return "/"
+
+    return next_page
+
+
 def ensure_csrf_token():
     """Create a CSRF token if the session does not have one."""
     if "csrf_token" not in session:
         session["csrf_token"] = secrets.token_hex(16)
+
+
+@app.before_request
+def create_csrf_token():
+    """Ensure that every session has a CSRF token."""
+    ensure_csrf_token()
 
 
 @app.template_filter()
@@ -464,7 +488,11 @@ def create_recipe():
     return redirect("/recipe/" + str(recipe_id))
 
 
-def render_recipe_page(recipe_id, filled_review=None):
+def render_recipe_page(
+    recipe_id,
+    filled_review=None,
+    next_page=None,
+):
     """Render a recipe page with review form values."""
     recipe = recipes.get_recipe(recipe_id)
 
@@ -477,6 +505,9 @@ def render_recipe_page(recipe_id, filled_review=None):
             "rating": "",
         }
 
+    if next_page is None:
+        next_page = get_safe_next_page()
+
     classifications = recipes.get_classifications(recipe_id)
     recipe_comments = comments.get_comments(recipe_id)
     review_summary = comments.get_review_summary(recipe_id)
@@ -488,6 +519,7 @@ def render_recipe_page(recipe_id, filled_review=None):
         comments=recipe_comments,
         review_summary=review_summary,
         filled_review=filled_review,
+        next_page=next_page,
     )
 
 
@@ -792,10 +824,13 @@ def remove_recipe(recipe_id):
     if recipe["user_id"] != session["user_id"]:
         return "You are not allowed to delete this recipe.", 403
 
+    next_page = get_safe_next_page()
+
     if request.method == "GET":
         return render_template(
             "remove_recipe.html",
             recipe=recipe,
+            next_page=next_page,
         )
 
     check_csrf()
@@ -803,7 +838,6 @@ def remove_recipe(recipe_id):
     if "remove" in request.form:
         recipes.delete_recipe(recipe_id)
         flash("Recipe deleted successfully.")
-        return redirect("/")
-
+        return redirect(next_page)
 
     return "Invalid action.", 400

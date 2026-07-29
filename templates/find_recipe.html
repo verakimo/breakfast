@@ -1,70 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search recipes | Hyvä aamiainen</title>
-</head>
-<body>
-  <header>
-    <h1>Hyvä aamiainen</h1>
-    <p>Breakfast recipes worth waking up for!</p>
-  </header>
+{% extends "layout.html" %}
 
-  <main>
-    <h2>Search recipes</h2>
-    {% for message in get_flashed_messages() %}
-      <p>
-        <strong>{{ message }}</strong>
-      </p>
-    {% endfor %}
+{% block title %}Search recipes{% endblock %}
 
-    <form action="/find_recipe" method="get">
-      <p>
-        <label for="query">Keyword</label><br>
-        <input
-          id="query"
-          name="query"
-          type="text"
-          value="{{ query }}"
-          maxlength="100"
-        >
-      </p>
+{% block content %}
+  <h2>Search recipes</h2>
 
-      <p>
-        <label for="breakfast_type">Breakfast type</label><br>
-        <select id="breakfast_type" name="breakfast_type">
-          <option value="">All breakfast types</option>
+  <form action="/find_recipe" method="get">
+    <p>
+      <label for="query">Keyword</label><br>
+      <input
+        id="query"
+        name="query"
+        type="text"
+        value="{{ query }}"
+        maxlength="100"
+      >
+    </p>
 
-          {% for option in breakfast_type_options %}
-            <option
-              value="{{ option.id }}"
-              {% if option.id == breakfast_type_id %}selected{% endif %}
-            >
-              {{ option.name }}
-            </option>
-          {% endfor %}
-        </select>
-      </p>
+    <p>
+      <label for="breakfast_type">Breakfast type</label><br>
+      <select id="breakfast_type" name="breakfast_type">
+        <option value="">All breakfast types</option>
 
-      <button type="submit">Search</button>
-    </form>
-
-    <p><a href="/">Return to the home page</a></p>
-
-    {% if query or breakfast_type_id is not none %}
-      <section>
-        <h2>Search results</h2>
-
-        {% for recipe in results %}
-          <p>
-            <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
-          </p>
-        {% else %}
-          <p>No matching recipes were found.</p>
+        {% for option in breakfast_type_options %}
+          <option
+            value="{{ option.id }}"
+            {% if option.id == breakfast_type_id %}
+              selected
+            {% endif %}
+          >
+            {{ option.name }}
+          </option>
         {% endfor %}
-      </section>
-    {% endif %}
-  </main>
-</body>
-</html>
+      </select>
+    </p>
+
+    <button type="submit">Search</button>
+  </form>
+
+  {% if query or breakfast_type_id is not none %}
+    <section>
+      <h2>Search results</h2>
+
+      {% for recipe in results %}
+        <article class="recipe-card">
+          <p>
+            <a
+              href="/recipe/{{ recipe.id }}?next_page={{ request.full_path | urlencode }}"
+            >
+              {{ recipe.title }}
+            </a>
+
+            {% if recipe.lactose_free
+                  or recipe.gluten_free
+                  or recipe.vegan
+                  or recipe.low_fodmap %}
+              <span class="diet-labels">
+                {% if recipe.lactose_free %}
+                  <abbr
+                    class="diet-label lactose-free"
+                    title="Lactose-free"
+                  >
+                    L
+                  </abbr>
+                {% endif %}
+
+                {% if recipe.gluten_free %}
+                  <abbr
+                    class="diet-label gluten-free"
+                    title="Gluten-free"
+                  >
+                    G
+                  </abbr>
+                {% endif %}
+
+                {% if recipe.vegan %}
+                  <abbr
+                    class="diet-label vegan"
+                    title="Vegan"
+                  >
+                    V
+                  </abbr>
+                {% endif %}
+
+                {% if recipe.low_fodmap %}
+                  <abbr
+                    class="diet-label low-fodmap"
+                    title="Low FODMAP"
+                  >
+                    FODMAP
+                  </abbr>
+                {% endif %}
+              </span>
+            {% endif %}
+          </p>
+        </article>
+      {% else %}
+        <p>No matching recipes were found.</p>
+      {% endfor %}
+    </section>
+  {% endif %}
+{% endblock %}

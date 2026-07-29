@@ -1,0 +1,319 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: auto;
+  max-width: 72em;
+  padding: 1em;
+  font-family: sans-serif;
+  line-height: 1.5;
+  background-color: beige;
+  color: black;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.2;
+}
+
+a {
+  color: saddlebrown;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid saddlebrown;
+  outline-offset: 2px;
+}
+
+.site-header {
+  margin-bottom: 0.5em;
+  padding: 1em;
+  background-color: white;
+  border: 1px solid tan;
+}
+
+.site-header h1,
+.site-header p {
+  margin: 0;
+}
+
+.site-header p {
+  margin-top: 0.25em;
+}
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 1em;
+  padding: 0.75em;
+  background-color: tan;
+  border: 1px solid saddlebrown;
+  text-align: center;
+}
+
+.site-nav ul {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.site-nav li {
+  padding: 0 1em;
+}
+
+.site-nav li + li {
+  border-left: 1px solid saddlebrown;
+}
+
+.site-nav a {
+  color: black;
+}
+
+.page-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18em;
+  gap: 1em;
+  align-items: start;
+}
+
+.content {
+  min-width: 0;
+  padding: 1em;
+  background-color: white;
+  border: 1px solid tan;
+}
+
+.authentication {
+  position: sticky;
+  top: 4.5em;
+  max-height: calc(100vh - 5.5em);
+  overflow-y: auto;
+  padding: 1em;
+  background-color: linen;
+  border: 1px solid tan;
+}
+
+.authentication h2 {
+  margin-top: 0;
+}
+
+.authentication input {
+  width: 100%;
+}
+
+.info {
+  margin: 0 0 1em;
+  padding: 0.75em 1em;
+  background-color: lightgray;
+  border: 1px solid gray;
+  color: black;
+}
+
+@media (max-width: 50em) {
+  .page-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .authentication {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+.recipe-card {
+  margin: 0.75em 0;
+  padding: 0.6em 0.8em;
+  background-color: linen;
+  border: 1px solid saddlebrown;
+}
+
+.recipe-card p {
+  margin: 0;
+}
+
+.diet-labels {
+  margin-left: 0.5em;
+}
+
+.diet-label {
+  display: inline-block;
+  margin-left: 0.2em;
+  padding: 0.05em 0.3em;
+  border: 1px solid currentColor;
+  font-weight: bold;
+  text-decoration: none;
+  background-color: white;
+}
+
+.lactose-free {
+  color: dodgerblue;
+}
+
+.gluten-free {
+  color: saddlebrown;
+}
+
+.vegan {
+  color: green;
+}
+
+.low-fodmap {
+  color: purple;
+}
+
+.rating-star {
+  color: goldenrod;
+}
+
+.recipe-text {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  font-family: inherit;
+}
+
+.profile-image {
+  display: block;
+  width: 200px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 1px solid tan;
+}
+
+.content form {
+  max-width: 40em;
+}
+
+.content input[type="text"],
+.content input[type="password"],
+.content input[type="number"],
+.content textarea,
+.content select {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.45em;
+  font: inherit;
+  background-color: white;
+  border: 1px solid tan;
+}
+
+.content input[type="file"] {
+  max-width: 100%;
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+fieldset {
+  margin: 1em 0;
+  padding: 1em;
+  border: 1px solid tan;
+}
+
+legend {
+  padding: 0 0.35em;
+  font-weight: bold;
+}
+
+button {
+  padding: 0.45em 0.8em;
+  font: inherit;
+  color: black;
+  background-color: tan;
+  border: 1px solid saddlebrown;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: wheat;
+}
+
+.recipe-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(14em, 0.7fr);
+  gap: 1em;
+  margin: 1em 0;
+}
+
+.recipe-details,
+.review-summary {
+  padding: 0.75em;
+  background-color: linen;
+  border: 1px solid tan;
+}
+
+.recipe-details p:first-child,
+.review-summary p:first-child {
+  margin-top: 0;
+}
+
+.recipe-details p:last-child,
+.review-summary p:last-child {
+  margin-bottom: 0;
+}
+
+.review-summary-title {
+  margin-top: 0;
+}
+
+.review-card {
+  margin: 0.75em 0;
+  padding: 0.75em;
+  background-color: linen;
+  border: 1px solid tan;
+}
+
+.review-card p:first-child {
+  margin-top: 0;
+}
+
+.review-card p:last-child {
+  margin-bottom: 0;
+}
+
+.comment-text {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 40em) {
+  .recipe-meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+.danger-action {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  font: inherit;
+  color: white;
+  background-color: firebrick;
+  border: 1px solid darkred;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.danger-action:hover {
+  color: white;
+  background-color: darkred;
+}

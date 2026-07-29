@@ -1,100 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home | Hyvä aamiainen</title>
-</head>
-<body>
-  <header>
-    <h1>Hyvä aamiainen</h1>
-    <p>Breakfast recipes worth waking up for!</p>
-    {% for message in get_flashed_messages() %}
-      <p>
-        <strong>{{ message }}</strong>
-      </p>
-    {% endfor %}
-  </header>
+{% extends "layout.html" %}
 
-  <main>
-    {% if session.username %}
-      <section>
-        <h2>Welcome, {{ session.username }}!</h2>
-        <p>You are logged in.</p>
-        <p><a href="/user/{{ session.user_id }}">View my profile</a></p>
-        <p><a href="/new_recipe">Add a recipe</a></p>
-        <form action="/logout" method="post">
-          <input
-            type="hidden"
-            name="csrf_token"
-            value="{{ session.csrf_token }}"
-          >
+{% block title %}Home{% endblock %}
 
-          <button type="submit">Log out</button>
-        </form>
-      </section>
-    {% else %}
-      <section>
-        <h2>Log in</h2>
+{% block content %}
+  <section>
+    <h2>Recipes</h2>
 
-        <form action="/login" method="post">
-          <input
-            type="hidden"
-            name="csrf_token"
-            value="{{ session.csrf_token }}"
-          >
-          <p>
-            <label for="username">Username</label><br>
-            <input
-              id="username"
-              name="username"
-              type="text"
-              value="{{ filled_login.username }}"
-              maxlength="30"
-              autocomplete="username"
-              required
-            >
-          </p>
+    <p>
+      <small>
+        L = Lactose-free,
+        G = Gluten-free,
+        V = Vegan,
+        FODMAP = Low FODMAP
+      </small>
+    </p>
 
-          <p>
-            <label for="password">Password</label><br>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              maxlength="100"
-              autocomplete="current-password"
-              required
-            >
-          </p>
-
-          <button type="submit">Log in</button>
-        </form>
-
+    {% for recipe in recipes %}
+      <article class="recipe-card">
         <p>
-          Do not have an account?
-          <a href="/register">Create an account</a>
-        </p>
-      </section>
-    {% endif %}
-
-    <p><a href="/find_recipe">Search recipes</a></p>
-
-    <section>
-      <h2>Recipes</h2>
-
-      <p>
-        <small>
-          L = Lactose-free,
-          G = Gluten-free,
-          V = Vegan,
-          FODMAP = Low FODMAP
-        </small>
-      </p>
-
-      {% for recipe in recipes %}
-        <p>
-          <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a>
+          <a href="/recipe/{{ recipe.id }}">
+            {{ recipe.title }}
+          </a>
 
           {% if recipe.lactose_free
                 or recipe.gluten_free
@@ -102,27 +28,46 @@
                 or recipe.low_fodmap %}
             <span class="diet-labels">
               {% if recipe.lactose_free %}
-                <abbr class="diet-label" title="Lactose-free">L</abbr>
+                <abbr
+                  class="diet-label lactose-free"
+                  title="Lactose-free"
+                >
+                  L
+                </abbr>
               {% endif %}
 
               {% if recipe.gluten_free %}
-                <abbr class="diet-label" title="Gluten-free">G</abbr>
+                <abbr
+                  class="diet-label gluten-free"
+                  title="Gluten-free"
+                >
+                  G
+                </abbr>
               {% endif %}
 
               {% if recipe.vegan %}
-                <abbr class="diet-label" title="Vegan">V</abbr>
+                <abbr
+                  class="diet-label vegan"
+                  title="Vegan"
+                >
+                  V
+                </abbr>
               {% endif %}
 
               {% if recipe.low_fodmap %}
-                <abbr class="diet-label" title="Low FODMAP">FODMAP</abbr>
+                <abbr
+                  class="diet-label low-fodmap"
+                  title="Low FODMAP"
+                >
+                  FODMAP
+                </abbr>
               {% endif %}
             </span>
           {% endif %}
         </p>
-      {% else %}
-        <p>No recipes have been added yet.</p>
-      {% endfor %}
-    </section>
-  </main>
-</body>
-</html>
+      </article>
+    {% else %}
+      <p>No recipes have been added yet.</p>
+    {% endfor %}
+  </section>
+{% endblock %}

@@ -22,15 +22,54 @@ def get_user(user_id):
 
 
 def get_recipes(user_id):
-    """Return recipes added by one user, newest first."""
+    """Return recipes added by one user with diet labels."""
     sql = """
         SELECT
-            id,
-            title,
-            created_at
-        FROM recipes
-        WHERE user_id = ?
-        ORDER BY created_at DESC, id DESC
+            r.id,
+            r.title,
+            r.created_at,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Lactose-free'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS lactose_free,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Gluten-free'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS gluten_free,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Vegan'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS vegan,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Low FODMAP'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS low_fodmap
+        FROM recipes r
+        LEFT JOIN recipe_classifications rc
+            ON rc.recipe_id = r.id
+        LEFT JOIN classification_options co
+            ON co.id = rc.option_id
+        LEFT JOIN classification_groups cg
+            ON cg.id = co.group_id
+        WHERE r.user_id = ?
+        GROUP BY r.id, r.title, r.created_at
+        ORDER BY r.created_at DESC, r.id DESC
     """
     return db.query(sql, [user_id])
 

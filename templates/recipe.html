@@ -1,197 +1,186 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ recipe.title }} | Hyvä aamiainen</title>
+{% extends "layout.html" %}
 
-  <style>
-    pre {
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Hyvä aamiainen</h1>
-    <p>Breakfast recipes worth waking up for!</p>
-  </header>
+{% block title %}{{ recipe.title }}{% endblock %}
 
-  <main>
-    <article>
-      <h2>{{ recipe.title }}</h2>
+{% block content %}
+  <article>
+    <h2>{{ recipe.title }}</h2>
 
-      {% for message in get_flashed_messages() %}
-        <p>
-          <strong>{{ message }}</strong>
-        </p>
-      {% endfor %}
-
-      {% if session.user_id == recipe.user_id %}
-        <p>
-          <a href="/edit_recipe/{{ recipe.id }}">Edit recipe</a>
-          <a href="/remove_recipe/{{ recipe.id }}">Delete recipe</a>
-        </p>
-      {% endif %}
-
-      <div class="recipe-meta">
-        <div class="recipe-details">
-          <p>
-            <strong>Added by:</strong>
-            <a href="/user/{{ recipe.user_id }}">
-              {{ recipe.username }}
-            </a>
-          </p>
-
-          <p>
-            <strong>Preparation time:</strong>
-            {{ recipe.preparation_time }} minutes
-          </p>
-
-          <p>
-            <strong>Added:</strong>
-            {{ recipe.created_at }}
-          </p>
-        </div>
-
-        <section class="review-summary">
-          <h4 class="review-summary-title">
-            Ratings and comments
-          </h4>
-
-          {% if review_summary.rating_count > 0 %}
-            <p>
-              <strong>Average rating:</strong>
-              <span class="rating-star" aria-hidden="true">★</span>
-              {{ review_summary.average_rating }} / 5
-            </p>
-
-            <p>
-              {{ review_summary.rating_count }}
-              rating{% if review_summary.rating_count|int != 1 %}s{% endif %}
-            </p>
-          {% else %}
-            <p>No ratings yet.</p>
-          {% endif %}
-
-          <p>
-            {{ review_summary.comment_count }}
-            comment{% if review_summary.comment_count|int != 1 %}s{% endif %}
-          </p>
-        </section>
-      </div>
-
-      {% if classifications %}
-        <section>
-          <h3>Classifications</h3>
-
-          {% for group in classifications %}
-            <p>
-              <strong>{{ group.name }}:</strong>
-              {{ group.options | join(", ") }}
-            </p>
-          {% endfor %}
-        </section>
-      {% endif %}
-
-      <h3>Ingredients</h3>
-      <pre>{{ recipe.ingredients }}</pre>
-
-      <h3>Preparation instructions</h3>
-      <pre>{{ recipe.instructions }}</pre>
-    </article>
-
-    {% if "user_id" in session %}
-      <section>
-        <h3>Add a review</h3>
-
-        <form
-          action="/recipe/{{ recipe.id }}/comment"
-          method="post"
+    {% if session.user_id == recipe.user_id %}
+      <p class="recipe-actions">
+        <a href="/edit_recipe/{{ recipe.id }}">
+          Edit recipe
+        </a>
+        <a
+          class="danger-action"
+          href="/remove_recipe/{{ recipe.id }}?next_page={{ next_page | urlencode }}"
         >
-          <input
-            type="hidden"
-            name="csrf_token"
-            value="{{ session.csrf_token }}"
-          >
-          <p>
-            <label for="rating">Rating</label><br>
-
-            <select id="rating" name="rating" required>
-              <option
-                value=""
-                disabled
-                {% if not filled_review.rating %}selected{% endif %}
-              >
-                Choose a rating
-              </option>
-
-              <option
-                value="5"
-                {% if filled_review.rating == "5" %}selected{% endif %}
-              >
-                5 — Excellent
-              </option>
-
-              <option
-                value="4"
-                {% if filled_review.rating == "4" %}selected{% endif %}
-              >
-                4 — Good
-              </option>
-
-              <option
-                value="3"
-                {% if filled_review.rating == "3" %}selected{% endif %}
-              >
-                3 — Average
-              </option>
-
-              <option
-                value="2"
-                {% if filled_review.rating == "2" %}selected{% endif %}
-              >
-                2 — Poor
-              </option>
-
-              <option
-                value="1"
-                {% if filled_review.rating == "1" %}selected{% endif %}
-              >
-                1 — Very poor
-              </option>
-            </select>
-          </p>
-
-          <p>
-            <label for="comment-text">Comment</label><br>
-
-            <textarea
-              id="comment-text"
-              name="comment_text"
-              rows="5"
-              maxlength="1000"
-              required
-            >{{ filled_review.comment_text }}</textarea>
-          </p>
-
-          <button type="submit">Add review</button>
-        </form>
-      </section>
-    {% else %}
-      <p>
-        <a href="/">Log in</a>
-        to leave a rating and comment.
+          Delete recipe
+        </a>
       </p>
     {% endif %}
 
+    <div class="recipe-meta">
+      <div class="recipe-details">
+        <p>
+          <strong>Added by:</strong>
+          <a href="/user/{{ recipe.user_id }}">
+            {{ recipe.username }}
+          </a>
+        </p>
+
+        <p>
+          <strong>Preparation time:</strong>
+          {{ recipe.preparation_time }} minutes
+        </p>
+
+        <p>
+          <strong>Added:</strong>
+          {{ recipe.created_at }}
+        </p>
+      </div>
+
+      <section class="review-summary">
+        <h3 class="review-summary-title">
+          Ratings and comments
+        </h3>
+
+        {% if review_summary.rating_count > 0 %}
+          <p>
+            <strong>Average rating:</strong>
+            <span class="rating-star" aria-hidden="true">★</span>
+            {{ review_summary.average_rating }} / 5
+          </p>
+
+          <p>
+            {{ review_summary.rating_count }}
+            rating{% if review_summary.rating_count|int != 1 %}s{% endif %}
+          </p>
+        {% else %}
+          <p>No ratings yet.</p>
+        {% endif %}
+
+        <p>
+          {{ review_summary.comment_count }}
+          comment{% if review_summary.comment_count|int != 1 %}s{% endif %}
+        </p>
+      </section>
+    </div>
+
+    {% if classifications %}
+      <section>
+        <h3>Classifications</h3>
+
+        {% for group in classifications %}
+          <p>
+            <strong>{{ group.name }}:</strong>
+            {{ group.options | join(", ") }}
+          </p>
+        {% endfor %}
+      </section>
+    {% endif %}
+
     <section>
+      <h3>Ingredients</h3>
+      <pre class="recipe-text">{{ recipe.ingredients }}</pre>
+    </section>
+
+    <section>
+      <h3>Preparation instructions</h3>
+      <pre class="recipe-text">{{ recipe.instructions }}</pre>
+    </section>
+  </article>
+
+  {% if "user_id" in session %}
+    <section>
+      <h3>Add a review</h3>
+
+      <form
+        action="/recipe/{{ recipe.id }}/comment"
+        method="post"
+      >
+        <input
+          type="hidden"
+          name="csrf_token"
+          value="{{ session.csrf_token }}"
+        >
+
+        <p>
+          <label for="rating">Rating</label><br>
+
+          <select id="rating" name="rating" required>
+            <option
+              value=""
+              disabled
+              {% if not filled_review.rating %}selected{% endif %}
+            >
+              Choose a rating
+            </option>
+
+            <option
+              value="5"
+              {% if filled_review.rating == "5" %}selected{% endif %}
+            >
+              5 — Excellent
+            </option>
+
+            <option
+              value="4"
+              {% if filled_review.rating == "4" %}selected{% endif %}
+            >
+              4 — Good
+            </option>
+
+            <option
+              value="3"
+              {% if filled_review.rating == "3" %}selected{% endif %}
+            >
+              3 — Average
+            </option>
+
+            <option
+              value="2"
+              {% if filled_review.rating == "2" %}selected{% endif %}
+            >
+              2 — Poor
+            </option>
+
+            <option
+              value="1"
+              {% if filled_review.rating == "1" %}selected{% endif %}
+            >
+              1 — Very poor
+            </option>
+          </select>
+        </p>
+
+        <p>
+          <label for="comment-text">Comment</label><br>
+
+          <textarea
+            id="comment-text"
+            name="comment_text"
+            rows="5"
+            maxlength="1000"
+            required
+          >{{ filled_review.comment_text }}</textarea>
+        </p>
+
+        <button type="submit">Add review</button>
+      </form>
+    </section>
+  {% else %}
+    <p>
+      Log in using the account form to leave a rating and comment.
+    </p>
+  {% endif %}
+
+  <section>
     <h3>Reviews</h3>
 
     {% if comments %}
       {% for comment in comments %}
-        <article>
+        <article class="review-card">
           <p>
             <strong>
               <a href="/user/{{ comment.user_id }}">
@@ -216,8 +205,4 @@
       <p>No reviews yet.</p>
     {% endif %}
   </section>
-
-    <p><a href="/">Return to the home page</a></p>
-  </main>
-</body>
-</html>
+{% endblock %}

@@ -221,8 +221,46 @@ def find_recipes(query, breakfast_type_id):
     sql = """
         SELECT
             r.id,
-            r.title
+            r.title,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Lactose-free'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS lactose_free,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Gluten-free'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS gluten_free,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Vegan'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS vegan,
+            MAX(
+                CASE
+                    WHEN cg.name = 'Diet'
+                     AND co.name = 'Low FODMAP'
+                    THEN 1
+                    ELSE 0
+                END
+            ) AS low_fodmap
         FROM recipes r
+        LEFT JOIN recipe_classifications rc
+            ON rc.recipe_id = r.id
+        LEFT JOIN classification_options co
+            ON co.id = rc.option_id
+        LEFT JOIN classification_groups cg
+            ON cg.id = co.group_id
         WHERE (
             ? = ''
             OR r.title LIKE ?
@@ -233,11 +271,12 @@ def find_recipes(query, breakfast_type_id):
             ? IS NULL
             OR EXISTS (
                 SELECT 1
-                FROM recipe_classifications rc
-                WHERE rc.recipe_id = r.id
-                  AND rc.option_id = ?
+                FROM recipe_classifications search_rc
+                WHERE search_rc.recipe_id = r.id
+                  AND search_rc.option_id = ?
             )
         )
+        GROUP BY r.id, r.title
         ORDER BY r.id DESC
     """
 

@@ -1,76 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ user.username }} | Hyvä aamiainen</title>
-</head>
-<body>
-  <header>
-    <h1>Hyvä aamiainen</h1>
-    <p>Breakfast recipes worth waking up for!</p>
-  </header>
+{% extends "layout.html" %}
 
-  <main>
-    <h2>{{ user.username }}</h2>
+{% block title %}{{ user.username }}{% endblock %}
 
-    {% for message in get_flashed_messages() %}
-      <p>
-        <strong>{{ message }}</strong>
-      </p>
-    {% endfor %}
+{% block content %}
+  <h2>{{ user.username }}</h2>
 
+  {% if user.has_image %}
+    <p>
+      <img
+        class="profile-image"
+        src="/image/{{ user.id }}"
+        alt="Profile picture of {{ user.username }}"
+        width="200"
+        height="200"
+      >
+    </p>
+  {% endif %}
+
+  {% if session.user_id == user.id %}
     {% if user.has_image %}
       <p>
-        <img
-          src="/image/{{ user.id }}"
-          alt="Profile picture of {{ user.username }}"
-          width="200"
-          height="200"
-          style="object-fit: cover;"
+        <a href="/add_image">Change profile picture</a>
+      </p>
+
+      <form action="/delete_image" method="post">
+        <input
+          type="hidden"
+          name="csrf_token"
+          value="{{ session.csrf_token }}"
         >
+        <button class="danger-action" type="submit">
+          Delete profile picture
+        </button>
+      </form>
+    {% else %}
+      <p>
+        <a href="/add_image">Add profile picture</a>
       </p>
     {% endif %}
+  {% endif %}
 
-    {% if session.user_id == user.id %}
-      {% if user.has_image %}
+  <p>
+    Recipes added: {{ recipes | count }}
+  </p>
+
+  <section>
+    <h3>Recipes</h3>
+
+    {% for recipe in recipes %}
+      <article class="recipe-card">
         <p>
-          <a href="/add_image">Change profile picture</a>
-        </p>
-
-        <form action="/delete_image" method="post">
-          <input
-            type="hidden"
-            name="csrf_token"
-            value="{{ session.csrf_token }}"
+          <a
+            href="/recipe/{{ recipe.id }}?next_page=/user/{{ user.id }}"
           >
-          <button type="submit">Delete profile picture</button>
-        </form>
-      {% else %}
-        <p>
-          <a href="/add_image">Add profile picture</a>
+            {{ recipe.title }}
+          </a>
+
+          {% if recipe.lactose_free
+                or recipe.gluten_free
+                or recipe.vegan
+                or recipe.low_fodmap %}
+            <span class="diet-labels">
+              {% if recipe.lactose_free %}
+                <abbr
+                  class="diet-label lactose-free"
+                  title="Lactose-free"
+                >L</abbr>
+              {% endif %}
+
+              {% if recipe.gluten_free %}
+                <abbr
+                  class="diet-label gluten-free"
+                  title="Gluten-free"
+                >G</abbr>
+              {% endif %}
+
+              {% if recipe.vegan %}
+                <abbr
+                  class="diet-label vegan"
+                  title="Vegan"
+                >V</abbr>
+              {% endif %}
+
+              {% if recipe.low_fodmap %}
+                <abbr
+                  class="diet-label low-fodmap"
+                  title="Low FODMAP"
+                >FODMAP</abbr>
+              {% endif %}
+            </span>
+          {% endif %}
+
+          <br>
+          <small>Added: {{ recipe.created_at }}</small>
         </p>
-      {% endif %}
-    {% endif %}
-
-    <p>
-      Recipes added: {{ recipes | count }}
-    </p>
-
-    <section>
-      <h3>Recipes</h3>
-
-      {% for recipe in recipes %}
-        <p>
-          <a href="/recipe/{{ recipe.id }}">{{ recipe.title }}</a><br>
-          Added: {{ recipe.created_at }}
-        </p>
-      {% else %}
-        <p>This user has not added any recipes yet.</p>
-      {% endfor %}
-    </section>
-
-    <p><a href="/">Return to the home page</a></p>
-  </main>
-</body>
-</html>
+      </article>
+    {% else %}
+      <p>This user has not added any recipes yet.</p>
+    {% endfor %}
+  </section>
+{% endblock %}

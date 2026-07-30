@@ -111,3 +111,8 @@ INSERT INTO classification_options (group_id, name)
 SELECT id, 'Vegan'
 FROM classification_groups
 WHERE name = 'Diet';
+
+INSERT INTO classification_options (group_id, name)
+SELECT id, 'Low FODMAP'
+FROM classification_groups
+WHERE name = 'Diet';

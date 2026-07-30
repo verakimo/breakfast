@@ -70,10 +70,13 @@ pip install flask
 
 #### 4. Luo tietokanta
 
-Luo uusi SQLite-tietokanta tiedoston `schema.sql` avulla:
+#### 4. Luo ja alusta tietokanta
+
+Luo uusi SQLite-tietokanta tiedoston `schema.sql` avulla ja lisää alkutiedot tiedostosta `init.sql`:
 
 ```bash
 sqlite3 database.db < schema.sql
+sqlite3 database.db < init.sql
 ```
 
 Jos haluat luoda tietokannan kokonaan uudelleen, poista ensin vanha tietokanta:
@@ -81,6 +84,7 @@ Jos haluat luoda tietokannan kokonaan uudelleen, poista ensin vanha tietokanta:
 ```bash
 rm -f database.db
 sqlite3 database.db < schema.sql
+sqlite3 database.db < init.sql
 ```
 
 Komento `rm -f database.db` poistaa pysyvästi kaikki paikalliseen tietokantaan aiemmin tallennetut tiedot.
@@ -240,10 +244,16 @@ pip install flask
 
 #### 4. Create the database
 
-Create a new SQLite database from `schema.sql`:
+
+### Английская версия
+
+#### 4. Create and initialize the database
+
+Create a new SQLite database from `schema.sql` and add the initial data from `init.sql`:
 
 ```bash
 sqlite3 database.db < schema.sql
+sqlite3 database.db < init.sql
 ```
 
 To recreate the database from the beginning, delete the old database first:
@@ -251,6 +261,7 @@ To recreate the database from the beginning, delete the old database first:
 ```bash
 rm -f database.db
 sqlite3 database.db < schema.sql
+sqlite3 database.db < init.sql
 ```
 
 The command `rm -f database.db` permanently removes all data previously stored in the local database.

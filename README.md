@@ -68,9 +68,25 @@ source venv/bin/activate
 pip install flask
 ```
 
-#### 4. Luo tietokanta
+#### 4. Luo asetustiedosto
 
-#### 4. Luo ja alusta tietokanta
+Luo projektin juurihakemistoon tiedosto `config.py` ja lisää siihen Flask-sovelluksen salainen avain:
+
+```python
+"""Private configuration for the Flask application."""
+
+SECRET_KEY = "lisää tähän satunnainen salainen avain"
+```
+
+Voit luoda satunnaisen avaimen seuraavalla komennolla:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Kopioi komennon tulostama arvo lainausmerkkien sisään. Älä lisää tiedostoa `config.py` versionhallintaan.
+
+#### 5. Luo ja alusta tietokanta
 
 Luo uusi SQLite-tietokanta tiedoston `schema.sql` avulla ja lisää alkutiedot tiedostosta `init.sql`:
 
@@ -89,7 +105,7 @@ sqlite3 database.db < init.sql
 
 Komento `rm -f database.db` poistaa pysyvästi kaikki paikalliseen tietokantaan aiemmin tallennetut tiedot.
 
-#### 5. Käynnistä sovellus
+#### 6. Käynnistä sovellus
 
 ```bash
 flask run
@@ -242,7 +258,25 @@ source venv/bin/activate
 pip install flask
 ```
 
-#### 4. Create the database
+#### 4. Create the configuration file
+
+Create a file named `config.py` in the project root and add a secret key for the Flask application:
+
+```python
+"""Private configuration for the Flask application."""
+
+SECRET_KEY = "add a random secret key here"
+```
+
+You can generate a random key with the following command:
+
+```bash
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Copy the generated value inside the quotation marks. Do not add `config.py` to version control.
+
+#### 5. Create the database
 
 Create a new SQLite database from `schema.sql` and add the initial data from `init.sql`:
 
@@ -261,7 +295,7 @@ sqlite3 database.db < init.sql
 
 The command `rm -f database.db` permanently removes all data previously stored in the local database.
 
-#### 5. Start the application
+#### 6. Start the application
 
 ```bash
 flask run

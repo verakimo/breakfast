@@ -244,11 +244,6 @@ pip install flask
 
 #### 4. Create the database
 
-
-### Английская версия
-
-#### 4. Create and initialize the database
-
 Create a new SQLite database from `schema.sql` and add the initial data from `init.sql`:
 
 ```bash
